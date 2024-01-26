@@ -1,5 +1,8 @@
 #ifndef DICE_H
 #define DICE_H
+#include <stdlib.h>
+#include <time.h>
+
 class Dice{
       int d1;
       int d2;
@@ -8,6 +11,6 @@ class Dice{
 	  Dice();
 	  void resetDice();
       int rollDice();
-      int getRoll();
+      int getRoll() const;
 };
 #endif

@@ -1,61 +1,67 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "Point.h"
-#include "Board.h"
 #include <string>
 #include <vector>
+#include <time.h>
+#include <iostream>
+#include <stdlib.h>
+#include <assert.h>
+#include "Board.h"
+#include "Point.h"
 using namespace std;
+
 class Player{
   protected:
-	  Board board;
-	  vector<Settlement> settlements;
-	  vector<City> cities;
-	  vector<Road> roads;
-	  vector<Point> newCityPoints;
-	  vector<Point> newSettlePoints;
-	  vector<DoublePoint> newRoadPoints;
+	  Board currentBoard;
+	  string color;
+	  string playerType;
 	  int resources[5];
+	  int tempResources[5];
 	  int tradeRates[5];
+	  int tempTradeRates[5];
+	  int resourcePoints[5];
 	  int playerNum;
-	  int points;
+	  int numPlayers;
+	  int numCities;
+	  int numSettlements;
+	  int numRoads;
+	  int score;
 	  bool isVisible;
   public:
-	  Player();
-	  int getPoints();
-	  int getNumSettlements();
-	  int getNumCities();
-	  int getNumRoads();
-	  vector<Settlement> getSettlements();
-	  vector<City> getCities();
-	  vector<Road> getRoads();
-	  void getResources(int resourcesToReplace[]);
-	  vector<Point> getCityPoints();
-      vector<Point> getSettlePoints();
-      vector<DoublePoint> getRoadPoints();
-	  void setResources(int newResources[]);
-	  void setPoints(int newPoints);
-	  void setVisible(bool b);
-      void resetBoard(Board b);
+	  Player(int n, string c, string t, int p, bool v);
+//	  Player();
+	  int getScore() const;
+	  int getNumCities() const;
+	  int getNumSettlements() const;
+	  int getNumRoads() const;
+	  void getResources(int resourcesToReplace[]) const;
+	  void setResources(const int newResources[]);
+	  void setScore(const int s);
+	  void setNumCities(const int c);
+	  void setNumSettlements(const int s);
+	  void setNumRoads(const int r);
+	  void setVisible(const bool v);
+      void resetBoard(const Board& b);
 	  void resetData();
       void gainResource(int i);
       void loseResource(int i);
-      void addSettlement(Point p, int n);
-      void addCity(Point p, int n, bool removeSettlement);
-      void addRoad(Point p1, Point p2, int n);
 	  string getResourceType(int i);
-      void addResource(string t);
-	  int findSettlementIndex(Point p);
+	  int getResourceIndex(string t);
+	  void addResource(string t);
+	  void portResource(int o, int n);
+	  void tempPortResource(int o, int n);
       int getTotalResources();
-      int getTotalSettlements();
+	  void updateResourcePoints(Point p);
       void gainPortPower(string t);
-      int getResourceToSteal();
-	  void printResources(int turn);
-      
-      virtual Point placeFirstSettlement() =0;
-      virtual Point placeFirstRoad(Point p) =0;
-      virtual Point placeSecondSettlement() =0;
-      virtual Point placeSecondRoad(Point p) =0;
-      virtual void discard(int turn) =0;
-      virtual int takeTurn(vector<DoublePoint> roadPoints, vector<Point> settlePoints, int playerResources[][5], int playerNumPoints[], int turn) =0;
+	  void tempGainPortPower(string t);
+      int getRandomResource();
+	  void printResources() const;
+
+      virtual Point chooseInitialSettlementLocation(Board b) = 0;
+      virtual Point chooseInitialRoadLocation(Point p) = 0;
+      virtual void discard() = 0;
+	  virtual int getPlayerToRob() = 0;
+	  virtual Point getPointToBlock(int playerToRob) = 0;
+      virtual Board takeTurn(Board b) =0;
 };
 #endif

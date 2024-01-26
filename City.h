@@ -1,14 +1,15 @@
 #ifndef CITY_H
 #define CITY_H
+#include <iostream>
 #include "Point.h"
+using namespace std;
 
 class City{
       Point location;
       int playerNum;
   public:
-      City();
       City(Point p,int n);
-      Point getLocation();
-      int getPlayerNum();
+      Point getLocation() const;
+      int getPlayerNum() const;
 };
 #endif

@@ -1,23 +1,30 @@
 #ifndef RANDCOMP_H
 #define RANDCOMP_H
-#include "Player.h"
+#include <iostream>
 #include <vector>
+#include <stdlib.h>
+#include <time.h>
+#include "Player.h"
+using namespace std;
+
 class RandComp: public Player {
+      int tempResources[5] = { 0,0,0,0,0 };
       vector<Point> hexIntersections;
   public:
-	  RandComp(Board startBoard, int n, bool b);
-	  RandComp();
-      Point placeFirstSettlement();
-      Point placeFirstRoad(Point p);
-      Point placeSecondSettlement();
-      Point placeSecondRoad(Point p);
-      void discard(int turn);
-      vector<int> canPlaceCity();
-      vector<int> canPlaceSettlement();
-      vector<int> canPlaceRoad();
-      int placeCity(int playerResources[][5], int playerNumPoints[], int turn);
-      int placeSettlement(vector<Point> possibleSettlements, int playerResources[][5], int playerNumPoints[], int turn);
-      int placeRoad(vector<DoublePoint> possibleRoads, int playerResources[][5], int playerNumPoints[], int turn);
-      int takeTurn(vector<DoublePoint> roadPoints, vector<Point> settlePoints, int playerResources[][5], int playerNumPoints[], int turn);
+	  RandComp(int n, string c, string t, int p, bool v);
+      int getHexValue(Point p);
+      int getRoadValue(DoublePoint d);
+      Point chooseInitialSettlementLocation(Board b);
+      Point chooseInitialRoadLocation(Point p);
+      void discard();
+      int getPlayerToRob();
+      Point getPointToBlock(int playerToRob);
+      vector<int> cityPortResources();
+      vector<int> settlementPortResources();
+      vector<int> roadPortResources();
+      int placeCity(vector<Point> cityPoints);
+      int placeSettlement(vector<Point> settlementPoints);
+      int placeRoad(vector<DoublePoint> roadPoints);
+      Board takeTurn(Board b);
 };
 #endif

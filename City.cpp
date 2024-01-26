@@ -1,11 +1,12 @@
+/*******************************************************************************************
+* Structure to hold the location and player number of each city on the Catan board
+*******************************************************************************************/
 #include "City.h"
-#include <iostream>
-using namespace std;
-City::City(){cerr<<"Inside empty city default constructor"<<endl;}
+
 City::City(Point p,int n)
 {
-      location=p;
-      playerNum=n;
+    location = p;
+    playerNum = n;
 }
-Point City::getLocation(){return location;}
-int City::getPlayerNum(){return playerNum;}
+Point City::getLocation() const { return location; }
+int City::getPlayerNum() const { return playerNum; }

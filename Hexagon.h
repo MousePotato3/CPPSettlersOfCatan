@@ -1,5 +1,6 @@
 #ifndef HEXAGON_H
 #define HEXAGON_H
+#include <iostream>
 #include <string>
 #include "Point.h"
 using namespace std;
@@ -11,14 +12,13 @@ class Hexagon
       int number;
       int value;
   public:
-      Hexagon();
       Hexagon(string t);
-      Point getLocation();      
-      string getType();
-      int getNumber();
-      int getValue();
-      void setLocation(Point p);
-      void setNumber(int n);
-      bool equals(Hexagon h);
+      Point getLocation() const;      
+      string getType() const;
+      int getNumber() const;
+      int getValue() const;
+      void setLocation(const Point& p);
+      void setNumber(const int n);
+      bool operator==(const Hexagon& h) const;
 };
 #endif

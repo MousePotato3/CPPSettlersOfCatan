@@ -24,9 +24,6 @@
     <ClCompile Include="City.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Computer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Dice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,9 +66,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="City.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Computer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Dice.h">

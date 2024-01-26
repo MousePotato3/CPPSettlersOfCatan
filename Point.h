@@ -1,5 +1,7 @@
 #ifndef POINT_H
 #define POINT_H
+#include <iostream>
+using namespace std;
 
 class Point{
       int x;
@@ -7,10 +9,11 @@ class Point{
   public:
       Point(int a, int b);
       Point();
-      int getX();
-      int getY();
+      int getX() const;
+      int getY() const;
       void setX(int a);
       void setY(int b);
-      bool equals(Point p);
+      bool operator==(const Point& p) const;
+      size_t operator()(const Point& p) const;
 };
 #endif

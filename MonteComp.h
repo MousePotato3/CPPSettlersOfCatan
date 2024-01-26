@@ -1,24 +1,31 @@
 #ifndef MONTECOMP_H
 #define MONTECOMP_H
-#include "Player.h"
+#include <iostream>
 #include <vector>
+#include <stdlib.h>
+#include <time.h>
+#include "Player.h"
+#include "Simulation.h"
+using namespace std;
+
 class MonteComp: public Player {
       vector<Point> hexIntersections;
   public:
-      MonteComp(Board startBoard, int n, bool b);
-      MonteComp();
-      Point placeFirstSettlement();
-      Point placeFirstRoad(Point p);
-      Point placeSecondSettlement();
-      Point placeSecondRoad(Point p);
-      void discard(int turn);
-      vector<int> canPlaceCity();
-      vector<int> canPlaceSettlement();
-      vector<int> canPlaceRoad();
-      int placeCity(int playerResources[][5], int playerNumPoints[], int turn);
-      int placeSettlement(vector<Point> possibleSettlements, int playerResources[][5], int playerNumPoints[], int turn);
-      int placeRoad(vector<DoublePoint> possibleRoads, int playerResources[][5], int playerNumPoints[], int turn);
-      int takeTurn(vector<DoublePoint> roadPoints, vector<Point> settlePoints, int playerResources[][5], int playerNumPoints[], int turn);
-	  int runSimulation(Board newBoard, int playerResources[][5], int playerNumPoints[], int turn);
+      MonteComp(int n, string c, string t, int p, bool v);
+      int getHexValue(Point p);
+      int getRoadValue(DoublePoint d);
+      Point chooseInitialSettlementLocation(Board b);
+      Point chooseInitialRoadLocation(Point p);
+      void discard();
+      int getPlayerToRob();
+      Point getPointToBlock(int playerToRob);
+      vector<int> cityPortResources();
+      vector<int> settlementPortResources();
+      vector<int> roadPortResources();
+      int placeCity(vector<Point> cityPoints);
+      int placeSettlement(vector<Point> settlementPoints);
+      int placeRoad(vector<DoublePoint> roadPoints);
+      Board takeTurn(Board b);
+	  int runSimulation(Board testBoard, int playerResources[], int playerNumPoints);
 };
 #endif

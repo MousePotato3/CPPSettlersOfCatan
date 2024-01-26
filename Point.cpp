@@ -1,20 +1,29 @@
+/*******************************************************************************************
+* Structure to hold the coordinates of each intersection on the Catan board
+*******************************************************************************************/
 #include "Point.h"
-#include <iostream>
-using namespace std;
-Point::Point(int a, int b)
+
+Point::Point(int x, int y)
 {
-     x=a;
-     y=b;
+    this->x = x;
+    this->y = y;
 }
-//This default constructor is used all the time
-Point::Point(){}
-int Point::getX(){return x;}
-int Point::getY(){return y;}
-void Point::setX(int a){x=a;}
-void Point::setY(int b){y=b;}
-bool Point::equals(Point p)
+// This default constructor is used all the time
+Point::Point() {
+    x = -1;
+    y = -1;
+}
+int Point::getX() const { return x; }
+int Point::getY() const { return y; }
+void Point::setX(int a) { x = a; }
+void Point::setY(int b) { y = b; }
+bool Point::operator==(const Point& p) const
 {
-     if(p.getX()==x && p.getY()==y)
-         return true;
-     return false;
+    if (x == p.x && y == p.y) return true;
+    else return false;
+}
+size_t Point::operator()(const Point& p) const {
+    size_t xHash = hash<int>()(p.getX());
+    size_t yHash = hash<int>()(p.getY()) << 1;
+    return xHash ^ yHash;
 }
