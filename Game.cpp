@@ -15,15 +15,15 @@ Game::Game() {
     pointsToWin = 10;
     playerToMove = 1;
     board.setNumPlayers(4);
-/*  players[0] = new MonteComp(1, "red", "MonteComp", numPlayers, true);
-    players[1] = new MonteComp(2, "blue", "MonteComp", numPlayers, true);
-    players[2] = new RandComp(3, "white", "RandComp", numPlayers, true);
-    players[3] = new RandComp(4, "orange", "RandComp", numPlayers, true);
-*/  players[0] = new RandComp(1, "red", "RandComp", numPlayers, true);
-    players[1] = new RandComp(2, "blue", "RandComp", numPlayers, true);
-    players[2] = new RandComp(3, "white", "RandComp", numPlayers, true);
-    players[3] = new RandComp(4, "orange", "RandComp", numPlayers, true);
-    playerColors = { "red", "blue", "white", "orange" };
+    players[0] = new MonteComp(1, "red", "MonteComp", numPlayers);
+    players[1] = new MonteComp(2, "blue", "MonteComp", numPlayers);
+    players[2] = new RandComp(3, "white", "RandComp", numPlayers);
+    players[3] = new RandComp(4, "orange", "RandComp", numPlayers);
+/*  players[0] = new RandComp(1, "red", "RandComp", numPlayers);
+    players[1] = new RandComp(2, "blue", "RandComp", numPlayers);
+    players[2] = new RandComp(3, "white", "RandComp", numPlayers);
+    players[3] = new RandComp(4, "orange", "RandComp", numPlayers);
+*/  playerColors = { "red", "blue", "white", "orange" };
 
     // Call the methods to set up the Settlers of Catan board
     cout << "Shuffling and placing Catan tiles and ports" << endl;

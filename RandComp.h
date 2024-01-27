@@ -11,7 +11,7 @@ class RandComp: public Player {
       int tempResources[5] = { 0,0,0,0,0 };
       vector<Point> hexIntersections;
   public:
-	  RandComp(int n, string c, string t, int p, bool v);
+	  RandComp(int n, string c, string t, int p);
       int getHexValue(Point p);
       int getRoadValue(DoublePoint d);
       Point chooseInitialSettlementLocation(Board b);

@@ -22,7 +22,7 @@ vector<T> removeDuplicates(vector<T> s) {
 	return v;
 }
 
-MonteComp::MonteComp(int n, string c, string t, int p, bool v) :Player(n, c, t, p, v) {
+MonteComp::MonteComp(int n, string c, string t, int p) : Player(n, c, t, p) {
 	srand((unsigned int)time(NULL));
 }
 
@@ -107,7 +107,7 @@ void MonteComp::discard() {
 	int numDiscardResources = getTotalResources() / 2;
 	int maxResourceType, maxResourceAccess, resourceAccess;
 
-	if (isVisible)
+	if (currentBoard.getVisibility())
 		cout << "Player " << playerNum << " discarded " << numDiscardResources
 		<< " resources on turn " << currentBoard.getTurnNumber() << endl;
 	for (int i = 0; i < numDiscardResources; i++) {
@@ -467,7 +467,7 @@ int MonteComp::placeCity(vector<Point> cityPoints) {
 	// Create a test board with a city in every possible location and run Monte Carlo simulations on each board
 	for (unsigned int i = 0; i < cityPoints.size(); i++) {
 		Board testBoard = currentBoard;
-		testBoard.addCity(cityPoints[i], playerNum - 1);		
+		testBoard.addCity(cityPoints[i], playerNum);		
 
 		int value = runSimulation(testBoard, tempResources, tempScore);
 		if (value >= maxValue) {
@@ -552,7 +552,7 @@ int MonteComp::placeSettlement(vector<Point> settlementPoints) {
 	// Create a test board with a settlement in every possible location and run Monte Carlo simulations on each board
 	for (unsigned int i = 0; i < settlementPoints.size(); i++) {
 		Board testBoard = currentBoard;
-		testBoard.addSettlement(settlementPoints[i], playerNum - 1);
+		testBoard.addSettlement(settlementPoints[i], playerNum);
 
 		int value = runSimulation(testBoard, tempResources, tempScore);
 		if (value >= maxValue) {
@@ -591,7 +591,7 @@ int MonteComp::placeSettlement(vector<Point> settlementPoints) {
 		resources[4]--;
 		currentBoard.addSettlement(settlementPoints.at(settlementIndex), playerNum);
 		string newPortType = currentBoard.getPortType(settlementPoints.at(settlementIndex));
-		if (newPortType != "") {
+		if (currentBoard.getVisibility() && newPortType != "") {
 			gainPortPower(newPortType);
 			cout << "Player " << playerNum << " just acquired a " << newPortType << " port!" << endl;
 		}
@@ -642,7 +642,7 @@ int MonteComp::placeRoad(vector<DoublePoint> roadPoints) {
 	// Create a test board with a road in every possible location and run Monte Carlo simulations on each board
 	for (unsigned int i = 0; i < roadPoints.size(); i++) {
 		Board testBoard = currentBoard;
-		testBoard.addRoad(roadPoints[i].getP1(), roadPoints[i].getP1(), playerNum - 1);
+		testBoard.addRoad(roadPoints[i].getP1(), roadPoints[i].getP2(), playerNum);
 
 		int value = runSimulation(testBoard, tempResources, tempScore);
 		if (value >= maxValue) {

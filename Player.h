@@ -26,9 +26,8 @@ class Player{
 	  int numSettlements;
 	  int numRoads;
 	  int score;
-	  bool isVisible;
   public:
-	  Player(int n, string c, string t, int p, bool v);
+	  Player(int n, string c, string t, int p);
 //	  Player();
 	  int getScore() const;
 	  int getNumCities() const;

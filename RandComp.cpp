@@ -22,7 +22,7 @@ vector<T> removeDuplicates(vector<T> s) {
     return v;
 }
 
-RandComp::RandComp(int n, string c, string t, int p, bool v):Player(n, c, t, p, v){
+RandComp::RandComp(int n, string c, string t, int p) : Player(n, c, t, p){
      srand ( (unsigned int)time(NULL) );
 }
 
@@ -106,7 +106,7 @@ void RandComp::discard() {
     int numDiscardResources = getTotalResources() / 2;
     int maxResourceType, maxResourceAccess, resourceAccess;
 
-    if (isVisible)
+    if (currentBoard.getVisibility())
         cout << "Player " << playerNum << " discarded " << numDiscardResources
             << " resources on turn " << currentBoard.getTurnNumber() << endl;
     for (int i = 0; i < numDiscardResources; i++) {
@@ -532,7 +532,7 @@ int RandComp::placeSettlement(vector<Point> settlementPoints) {
             resources[4]--;
             currentBoard.addSettlement(settlementPoints.at(settlementIndex), playerNum);
             string newPortType = currentBoard.getPortType(settlementPoints.at(settlementIndex));
-            if (newPortType != "") {
+            if (currentBoard.getVisibility() && newPortType != "") {
                 gainPortPower(newPortType);
                 cout << "Player " << playerNum << " just acquired a " << newPortType << " port!" << endl;
             }

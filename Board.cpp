@@ -64,6 +64,7 @@ vector<City> Board::getCities() const { return cities; }
 vector<Road> Board::getRoads() const { return roads; }
 vector<int> Board::getNumResources() const { return numResources; }
 vector<int> Board::getPlayerScores() const { return playerScores; }
+bool Board::getVisibility() const { return isVisible; }
 Point Board::getRobberLocation() const { return robberLocation; }
 int Board::getTurnNumber() const { return turnNumber; }
 int Board::getWinner() const { return winner; }
@@ -86,7 +87,7 @@ int Board::getPlayerScore(int n) const {
 Hexagon Board::getHexagon(int i) const { return tiles.at(i); }
 Port Board::getPort(int i) const { return ports.at(i); }
 vector<Point> Board::getHexIntersections() const { return hexIntersections; }
-void Board::setVisible(const bool b) { isVisible = b; }
+void Board::setVisibility(const bool b) { isVisible = b; }
 void Board::setNumPlayers(const int p) { 
 	numPlayers = p; 
 	for (int i = 0; i < numPlayers; i++) {
@@ -147,7 +148,7 @@ void Board::addSettlement(Point p, int n, bool initialPlacement) {
 //		cerr << "ERROR: Player " << n << " tried to place a settlement but does not have enough resources to do so" << endl;
 //	}
 	else {
-		if (!initialPlacement) {
+		if (isVisible && !initialPlacement) {
 //			numResources.at(n - 1) -= 4;
 			cout << "Player " << n << " scored a point on turn " << turnNumber
 				<< " by placing a settlement at (" << p.getX() << ", " << p.getY() << ")" << endl;
@@ -170,7 +171,7 @@ void Board::addCity(Point p, int n, bool initialPlacement) {
 
 	// Remove the player's settlement and replace it with a city
 	else {
-		if (!initialPlacement) {
+		if (isVisible && !initialPlacement) {
 //			numResources.at(n - 1) -= 5;
 			cout << "Player " << n << " scored a point on turn " << turnNumber
 				<< " by placing a city at (" << p.getX() << ", " << p.getY() << ")" << endl;
@@ -202,7 +203,7 @@ void Board::addRoad(Point p1, Point p2, int n, bool initialPlacement) {
 	}
 	else {
 		if (p1.getX() < p2.getX() or (p1.getX() == p2.getX() and p1.getY() <= p2.getY())) {
-			if (!initialPlacement) {
+			if (isVisible && !initialPlacement) {
 //				numResources.at(n - 1) -= 2;
 				cout << "Player " << n << " placed a road between (" << p1.getX()
 					<< ", " << p1.getY() << ") and (" << p2.getX() << ", " << p2.getY()
@@ -211,7 +212,7 @@ void Board::addRoad(Point p1, Point p2, int n, bool initialPlacement) {
 			roads.push_back(Road(p1, p2, n));
 		}
 		else {
-			if (!initialPlacement) {
+			if (isVisible && !initialPlacement) {
 //				numResources.at(n - 1) -= 2;
 				cout << "Player " << n << " placed a road between (" << p2.getX()
 					<< ", " << p2.getY() << ") and (" << p1.getX() << ", " << p1.getY()

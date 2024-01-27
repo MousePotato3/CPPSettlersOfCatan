@@ -42,6 +42,7 @@ public:
 	vector<Road> getRoads() const;
 	vector<int> getNumResources() const;
 	vector<int> getPlayerScores() const;
+	bool getVisibility() const;
 	Point getRobberLocation() const;
 	int getTurnNumber() const;
 	int getWinner() const;
@@ -50,7 +51,7 @@ public:
 	Hexagon getHexagon(int i) const;
 	Port getPort(int i) const;
 	vector<Point> getHexIntersections() const;
-	void setVisible(const bool b);
+	void setVisibility(const bool b);
 	void setNumPlayers(const int p);
 	void setRobberLocation(const Point& p);
 	void setTurnNumber(const int t);

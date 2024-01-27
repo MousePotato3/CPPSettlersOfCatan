@@ -11,7 +11,7 @@ using namespace std;
 class MonteComp: public Player {
       vector<Point> hexIntersections;
   public:
-      MonteComp(int n, string c, string t, int p, bool v);
+      MonteComp(int n, string c, string t, int p);
       int getHexValue(Point p);
       int getRoadValue(DoublePoint d);
       Point chooseInitialSettlementLocation(Board b);

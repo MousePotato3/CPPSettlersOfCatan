@@ -17,29 +17,30 @@ Simulation::Simulation(Board b, int playerResources[], int playerScore, int mont
 	pointsToWin = 10;
 	playerToMove = 1;
 	board = b;
-    players[0] = new RandComp(1, "red", "RandComp", numPlayers, false);
-    players[1] = new RandComp(2, "blue", "RandComp", numPlayers, false);
-    players[2] = new RandComp(3, "white", "RandComp", numPlayers, false);
-    players[3] = new RandComp(4, "orange", "RandComp", numPlayers, false);
-	board.setVisible(false);
+    players[0] = new RandComp(1, "red", "RandComp", numPlayers);
+    players[1] = new RandComp(2, "blue", "RandComp", numPlayers);
+    players[2] = new RandComp(3, "white", "RandComp", numPlayers);
+    players[3] = new RandComp(4, "orange", "RandComp", numPlayers);
+	board.setVisibility(false);
 
     // Copy the resources for the player that is running the simulation 
     // and generate the resources for the other players randomly 
     for (int i = 0; i < numPlayers; i++) {
-        if (montePlayer == i + 1) {
-            for (int j = 0; j < length(resources[i]); j++)
-                resources[i][j] = playerResources[i];
-        }
+        players[i]->resetBoard(board);
+        if (montePlayer == i + 1)
+            players[i]->setResources(playerResources);
         else
             generateRandomResources(i + 1, board.getNumResources(i + 1));
+        players[i]->getResources(initResources[i]);
     }
     // Copy the known score for the player that is running the simulation and copy 
     // the remaining scores from the Board class (ignores hidden victory point cards) 
     for (int i = 0; i < numPlayers; i++) {
         if (montePlayer == i + 1)
-            scores[i] = playerScore;
+            players[i]->setScore(playerScore);
         else
-            scores[i] = board.getPlayerScore(i + 1);
+            players[i]->setScore(board.getPlayerScore(i + 1));
+        initScores[i] = players[i]->getScore();
     }
 
     playerToMove = montePlayer;
@@ -71,8 +72,8 @@ int Simulation::runPlayouts(int montePlayer) {
         for (int j = 0; j < numPlayers; j++) {
 			players[j]->resetData();
             players[j]->resetBoard(board);
-			players[j]->setResources(resources[j]);
-			players[j]->setScore(scores[j]);
+			players[j]->setResources(initResources[j]);
+			players[j]->setScore(initScores[j]);
 
             // Generate random resources for players with unknown resources
             if (montePlayer != j + 1)
@@ -161,7 +162,6 @@ void Simulation::initPlacement() {
 void Simulation::collectResources() {
     // Eventually players should have an option to play knight cards before rolling dice
     int diceroll = board.rollDice();
-    // cout << diceroll << " rolled on turn " << turn << endl;
 
     if (diceroll == 7) {
         // Players with more than a certain number of resources(usually half of their hand)
@@ -173,7 +173,7 @@ void Simulation::collectResources() {
         // The player whose turn it is moves the robber and steals from another player
         int playerToRob = players[playerToMove - 1]->getPlayerToRob();
         board.setRobberLocation(players[playerToMove - 1]->getPointToBlock(playerToRob));
-        int resourceNum = players[playerToRob]->getRandomResource();
+        int resourceNum = players[playerToRob - 1]->getRandomResource();
         if (resourceNum != -1) {
             players[playerToMove - 1]->gainResource(resourceNum);
             players[playerToRob - 1]->loseResource(resourceNum);
@@ -188,8 +188,9 @@ void Simulation::collectResources() {
         for (unsigned int i = 0; i < settlements.size(); i++) {
             neighbors = board.getAdjacentHexes(settlements.at(i).getLocation());
             for (unsigned int j = 0; j < neighbors.size(); j++) {
-                if (neighbors.at(j).getNumber() == diceroll)
+                if (neighbors.at(j).getNumber() == diceroll && neighbors.at(j).getLocation() != board.getRobberLocation()) {
                     players[settlements.at(i).getPlayerNum() - 1]->addResource(neighbors.at(j).getType());
+                }
             }
         }
         for (unsigned int i = 0; i < cities.size(); i++) {

@@ -10,8 +10,8 @@ class Simulation{
       Board board;
       Player* players[4];
       vector<Hexagon> neighbors;
-	  int resources[4][5];
-	  int scores[4];
+	  int initResources[4][5];
+	  int initScores[4];
       int numPlayers;
       int maxResources;
       int playerToMove;

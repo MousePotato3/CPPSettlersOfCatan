@@ -11,13 +11,12 @@
 template<typename T, int size>
 int length(T(&)[size]){return size;}
 
-Player::Player(int n, string c, string t, int p, bool v)
+Player::Player(int n, string c, string t, int p)
 {
 	playerNum = n;
 	color = c;
 	playerType = t;
 	numPlayers = p;
-	isVisible = v;
 	for (int i = 0; i < length(resources); i++)
 		resources[i] = 0;
 	for (int i = 0; i < length(tempResources); i++)
@@ -51,7 +50,6 @@ void Player::setScore(const int s) { score = s; }
 void Player::setNumCities(const int c) { numCities = c; }
 void Player::setNumSettlements(const int s) { numSettlements = s; }
 void Player::setNumRoads(const int r) { numRoads = r; }
-void Player::setVisible(const bool v) { isVisible = v; }
 void Player::resetBoard(const Board& b) { currentBoard = b; }
 
 // Clear all of the player's data
@@ -145,7 +143,7 @@ void Player::portResource(int o, int n) {
 		resources[n]++;
 		resources[o] -= tradeRates[o];
 
-		if (isVisible)
+		if (currentBoard.getVisibility())
 			cout << "Player " << playerNum << " just traded " << tradeRates[o] << " "
 				<< getResourceType(o) << " for 1 " << getResourceType(n) << " using a port" << endl;
 	}
@@ -234,7 +232,7 @@ int Player::getRandomResource(){
 	if (total == 0)
 		return -1;
 	srand ( (unsigned int)time(NULL) );
-	int resourceNum=rand()%total;
+	int resourceNum = rand() % total;
 	if (0 <= resourceNum && resourceNum < resources[0])
 		return 0;
 	else if (resources[0] <= resourceNum && resourceNum < resources[0] + resources[1])
