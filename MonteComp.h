@@ -10,6 +10,7 @@ using namespace std;
 
 class MonteComp: public Player {
       vector<Point> hexIntersections;
+      string actionType;
   public:
       MonteComp(int n, string c, string t, int p);
       int getHexValue(Point p);
@@ -26,6 +27,6 @@ class MonteComp: public Player {
       int placeSettlement(vector<Point> settlementPoints);
       int placeRoad(vector<DoublePoint> roadPoints);
       Board takeTurn(Board b);
-	  int runSimulation (Board testBoard, int playerResources[], int playerNumPoints) const;
+	  int runSimulation (Board testBoard, string actionType, int playerResources[], int playerNumPoints) const;
 };
 #endif

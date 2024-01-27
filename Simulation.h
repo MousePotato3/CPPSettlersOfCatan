@@ -10,6 +10,7 @@ class Simulation{
       Board board;
       Player* players[4];
       vector<Hexagon> neighbors;
+      string actionType;
 	  int initResources[4][5];
 	  int initScores[4];
       int numPlayers;
@@ -17,7 +18,7 @@ class Simulation{
       int playerToMove;
       int pointsToWin;
   public:
-	  Simulation(Board b, int playerResources[], int playerScore, int montePlayer);
+	  Simulation(Board b, string a, int playerResources[], int playerScore, int montePlayer);
 	  int runPlayouts(int montePlayer);
       void generateRandomResources(int playerNum, int numResources);
       void initPlacement();

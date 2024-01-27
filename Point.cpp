@@ -32,3 +32,6 @@ size_t Point::operator()(const Point& p) const {
     size_t yHash = hash<int>()(p.getY()) << 1;
     return xHash ^ yHash;
 }
+string Point::toString() {
+    return "(" + to_string(x) + ", " + to_string(y) + ")";
+}

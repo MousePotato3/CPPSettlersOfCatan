@@ -1,6 +1,7 @@
 #ifndef POINT_H
 #define POINT_H
 #include <iostream>
+#include <string>
 using namespace std;
 
 class Point{
@@ -16,5 +17,6 @@ class Point{
       bool operator==(const Point& p) const;
       bool operator!=(const Point& p) const;
       size_t operator()(const Point& p) const;
+      string toString() ;
 };
 #endif

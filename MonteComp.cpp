@@ -439,7 +439,8 @@ int MonteComp::placeCity(vector<Point> cityPoints) {
 		return -1;
 
 	// Run simulations on the default option, which is not to place a city
-	int maxValue = runSimulation(currentBoard, resources, score);
+	actionType = "No City";
+	int maxValue = runSimulation(currentBoard, actionType, resources, score);
 	int cityIndex = -1;
 
 	// Create a copy of the player's current resources
@@ -466,10 +467,12 @@ int MonteComp::placeCity(vector<Point> cityPoints) {
 
 	// Create a test board with a city in every possible location and run Monte Carlo simulations on each board
 	for (unsigned int i = 0; i < cityPoints.size(); i++) {
+		actionType = "City at " + cityPoints[i].toString();
 		Board testBoard = currentBoard;
-		testBoard.addCity(cityPoints[i], playerNum);		
+		testBoard.setVisibility(false);
+		testBoard.addCity(cityPoints[i], playerNum);
 
-		int value = runSimulation(testBoard, tempResources, tempScore);
+		int value = runSimulation(testBoard, actionType, tempResources, tempScore);
 		if (value >= maxValue) {
 			maxValue = value;
 			cityIndex = i;
@@ -518,7 +521,8 @@ int MonteComp::placeSettlement(vector<Point> settlementPoints) {
 		return -1;
 
 	// Run simulations on the default option, which is not to place a settlement
-	int maxValue = runSimulation(currentBoard, resources, score);
+	actionType = "No Settlement";
+	int maxValue = runSimulation(currentBoard, actionType, resources, score);
 	int settlementIndex = -1;
 
 	// Create a copy of the player's current resources
@@ -551,10 +555,12 @@ int MonteComp::placeSettlement(vector<Point> settlementPoints) {
 
 	// Create a test board with a settlement in every possible location and run Monte Carlo simulations on each board
 	for (unsigned int i = 0; i < settlementPoints.size(); i++) {
+		actionType = "Settlement at " + settlementPoints[i].toString();
 		Board testBoard = currentBoard;
+		testBoard.setVisibility(false);
 		testBoard.addSettlement(settlementPoints[i], playerNum);
 
-		int value = runSimulation(testBoard, tempResources, tempScore);
+		int value = runSimulation(testBoard, actionType, tempResources, tempScore);
 		if (value >= maxValue) {
 			maxValue = value;
 			settlementIndex = i;
@@ -614,7 +620,8 @@ int MonteComp::placeRoad(vector<DoublePoint> roadPoints) {
 		return -1;
 
 	// Run simulations on the default option, which is not to place a road
-	int maxValue = runSimulation(currentBoard, resources, score);
+	actionType = "No Road";
+	int maxValue = runSimulation(currentBoard, actionType, resources, score);
 	int roadIndex = -1;
 
 	// Create a copy of the player's current resources
@@ -641,10 +648,12 @@ int MonteComp::placeRoad(vector<DoublePoint> roadPoints) {
 
 	// Create a test board with a road in every possible location and run Monte Carlo simulations on each board
 	for (unsigned int i = 0; i < roadPoints.size(); i++) {
+		actionType = "Road between " + roadPoints[i].getP1().toString() + " and " + roadPoints[i].getP2().toString();
 		Board testBoard = currentBoard;
+		testBoard.setVisibility(false);
 		testBoard.addRoad(roadPoints[i].getP1(), roadPoints[i].getP2(), playerNum);
 
-		int value = runSimulation(testBoard, tempResources, tempScore);
+		int value = runSimulation(testBoard, actionType, tempResources, tempScore);
 		if (value >= maxValue) {
 			maxValue = value;
 			roadIndex = i;
@@ -745,8 +754,8 @@ Board MonteComp::takeTurn(Board b) {
 }
 
 // Run Monte Carlo Simulations for the MonteComp player, and return the number of games won 
-int MonteComp::runSimulation(Board testBoard, int playerResources[], int playerNumPoints) const {
-	Simulation s = Simulation(testBoard, playerResources, playerNumPoints, playerNum);
+int MonteComp::runSimulation(Board testBoard, string actionType, int playerResources[], int playerNumPoints) const {
+	Simulation s = Simulation(testBoard, actionType, playerResources, playerNumPoints, playerNum);
 	int value = s.runPlayouts(playerNum);
 	return value;
 }

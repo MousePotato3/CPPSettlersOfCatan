@@ -10,13 +10,14 @@ int length(T(&)[size]) { return size; }
 const int NUM_PLAYOUTS = 3;
 const int MAX_TURNS = 100;
 
-Simulation::Simulation(Board b, int playerResources[], int playerScore, int montePlayer) {
+Simulation::Simulation(Board b, string a, int playerResources[], int playerScore, int montePlayer) {
     // Initialize the variables for the Simulation class and call each player's constructor
 	numPlayers = 4;
 	maxResources = 7;
 	pointsToWin = 10;
 	playerToMove = 1;
 	board = b;
+    actionType = a;
     players[0] = new RandComp(1, "red", "RandComp", numPlayers);
     players[1] = new RandComp(2, "blue", "RandComp", numPlayers);
     players[2] = new RandComp(3, "white", "RandComp", numPlayers);
@@ -62,8 +63,6 @@ int Simulation::runPlayouts(int montePlayer) {
     int value = 0;
     int unfinishedGames = 0;
 
-    cout << "About to run " << NUM_PLAYOUTS << " simulations" << endl;
-
     // Run Monte Carlo simulations for the MonteComp player (runs faster in parallel)
     for (unsigned int i = 0; i < NUM_PLAYOUTS; i++) {
         int winner = -1;
@@ -88,7 +87,8 @@ int Simulation::runPlayouts(int montePlayer) {
         else if (winner == 0)
 			unfinishedGames++;
 	}
-    cout << "The number of wins by player " << montePlayer << " was " << value << endl;
+    cout << "Player " << montePlayer << " tried action " << actionType << " and won " 
+        << value << " times in " << NUM_PLAYOUTS << " games" << endl;
     if (unfinishedGames > 0)
         cout << unfinishedGames << " games were not won within " << MAX_TURNS << " turns by any player" << endl;
 	return value;
