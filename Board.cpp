@@ -69,7 +69,7 @@ int Board::getTurnNumber() const { return turnNumber; }
 int Board::getWinner() const { return winner; }
 int Board::getNumResources(int n) const { 
 	if (n < 1 || n > numPlayers) {
-		cerr << "Attempted to get the number of resources for invalid player " << n << endl;
+		cerr << "ERROR: Attempted to get the number of resources for invalid player " << n << endl;
 		return -1;
 	}
 	else
@@ -77,7 +77,7 @@ int Board::getNumResources(int n) const {
 }
 int Board::getPlayerScore(int n) const { 
 	if (n < 1 || n > numPlayers) {
-		cerr << "Attempted to get the score for invalid player " << n << endl;
+		cerr << "ERROR: Attempted to get the score for invalid player " << n << endl;
 		return -1;
 	}
 	else
@@ -106,13 +106,13 @@ void Board::setWinner(const int w) {
 }
 void Board::setNumResources(const int n, const int r) {
 	if (n < 1 || n > numPlayers)
-		cerr << "Attempted to set the number of resources for invalid player " << n << endl;
+		cerr << "ERROR: Attempted to set the number of resources for invalid player " << n << endl;
 	else
 		numResources.at(n - 1) = r;
 }
 void Board::setPlayerScore(const int n, const int s) {
 	if (n < 1 || n > numPlayers)
-		cerr << "Attempted to set the score for invalid player " << n << endl;
+		cerr << "ERROR: Attempted to set the score for invalid player " << n << endl;
 	else
 		playerScores.at(n - 1) = s;
 }
@@ -120,15 +120,15 @@ void Board::resetDice() { d.resetDice(); }
 int Board::rollDice() { return d.rollDice(); }
 void Board::gainResource(int n) { 
 	if (n < 1 || n > numPlayers)
-		cerr << "Attempted to increase the resource count for invalid player " << n << endl;
+		cerr << "ERROR: Attempted to increase the resource count for invalid player " << n << endl;
 	else
 		numResources.at(n - 1)++;
 }
 void Board::loseResource(int n) {
 	if (n < 1 || n > numPlayers)
-		cerr << "Attempted to decrease the resource count for invalid player " << n << endl;
+		cerr << "ERROR: Attempted to decrease the resource count for invalid player " << n << endl;
 	else if (numResources.at(n - 1) < 1)
-		cerr << "Player " << n + 1 << " tried to give up a resource but had none left" << endl;
+		cerr << "ERROR: Player " << n + 1 << " tried to give up a resource but had none left" << endl;
 	else
 		numResources.at(n - 1)--;
 }

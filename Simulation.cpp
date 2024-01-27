@@ -70,6 +70,7 @@ int Simulation::runPlayouts(int montePlayer) {
 		board.resetDice();
         for (int j = 0; j < numPlayers; j++) {
 			players[j]->resetData();
+            players[j]->resetBoard(board);
 			players[j]->setResources(resources[j]);
 			players[j]->setScore(scores[j]);
 
@@ -96,7 +97,7 @@ int Simulation::runPlayouts(int montePlayer) {
 void Simulation::generateRandomResources(int playerNum, int numResources) {
     int randomNumber = -1;
     for (int i = 0; i < numResources; i++) {
-        randomNumber = rand() * 5;
+        randomNumber = rand() % 5;
         players[playerNum - 1]->gainResource(randomNumber);
     }
 }
