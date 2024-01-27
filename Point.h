@@ -14,6 +14,7 @@ class Point{
       void setX(int a);
       void setY(int b);
       bool operator==(const Point& p) const;
+      bool operator!=(const Point& p) const;
       size_t operator()(const Point& p) const;
 };
 #endif

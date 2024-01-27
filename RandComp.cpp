@@ -77,7 +77,8 @@ Point RandComp::chooseInitialSettlementLocation(Board b) {
 	hexIntersections = currentBoard.getHexIntersections();
     for (unsigned int i = 0; i < hexIntersections.size(); i++) {
         if (currentBoard.legalPlacement(hexIntersections.at(i))) {
-            randomNumber = rand() / 0.5;
+            // Generate a random double between 0 and 2
+            randomNumber = ((double)rand()) * 2 / (double)RAND_MAX;
             hexValue = getHexValue(hexIntersections.at(i)) + randomNumber;
             if (hexValue > maxValue) {
                 maxValue = hexValue;
@@ -99,23 +100,31 @@ Point RandComp::chooseInitialRoadLocation(Point p) {
     return possibleRoadPoints.at(roadNum);
 }
 
-// Discard resources from the player at random
+// Discard resources from the player, prioritizing both the resources that the player has 
+// a lot of right now and resources that the player is likely to collect more of later
 void RandComp::discard() {
-    int numberToDiscard = getTotalResources() / 2;
+    int numDiscardResources = getTotalResources() / 2;
+    int maxResourceType, maxResourceAccess, resourceAccess;
+
     if (isVisible)
-        cout << "Player " << playerNum << " discarded " << numberToDiscard 
+        cout << "Player " << playerNum << " discarded " << numDiscardResources
             << " resources on turn " << currentBoard.getTurnNumber() << endl;
-    for (int i = 0; i < numberToDiscard; i++) {
-        int maxIndex = 0;
-        int maxResources = resources[0];
+    for (int i = 0; i < numDiscardResources; i++) {
+        maxResourceType = 0;
+        maxResourceAccess = resources[0] * resources[0] + resourcePoints[0];
+
         for (int j = 1; j < length(resources); j++) {
-            if (resources[j] >= maxResources) {
-                maxIndex = j;
-                maxResources = resources[j];
+            resourceAccess = resources[j] * resources[j] + resourcePoints[j];
+            if (resources[j] > 0 && resourceAccess >= maxResourceAccess) {
+                maxResourceType = j;
+                maxResourceAccess = resourceAccess;
 			}
 		}
-		resources[maxIndex]--;
+		resources[maxResourceType]--;
 	}
+
+    // Set the board's number of resources for the player based on the player's actual resources
+    currentBoard.setNumResources(playerNum, getTotalResources());
 }
 
 // Generate a random number between 0 and 2 and add it to each player's score, 
@@ -123,6 +132,7 @@ void RandComp::discard() {
 // Only choose a player that has a resource to steal, if possible.
 int RandComp::getPlayerToRob() {
     double maxPoints = 0.0;
+    double randomNumber;
     int playerToRob = -1;
     int cannotRob = 1;
 
@@ -136,7 +146,8 @@ int RandComp::getPlayerToRob() {
     // Select a player to rob randomly who is leading or close to the lead
     vector<int> playerScores = currentBoard.getPlayerScores();
     for (unsigned int i = 0; i < playerScores.size(); i++) {
-        double randomNumber = rand() / 0.5;
+        // Generate a random double between 0 and 2
+        randomNumber = ((double)rand()) * 2 / (double)RAND_MAX;
         if (((cannotRob == 0 && numResources.at(i) > 0) || cannotRob == 1)
             && i != playerNum - 1 && playerScores.at(i) + randomNumber > maxPoints) {
             maxPoints = playerScores.at(i) + randomNumber;
@@ -176,7 +187,7 @@ Point RandComp::getPointToBlock(int playerToRob) {
     }
     possibleBlockedHexes = removeDuplicates(tempHexes);
 
-    maxValue = -100;
+    maxValue = -1000;
 
     // cout << "Player " << robbingPlayer << " is robbing player " << playerToRob << endl;
     // cout << "Number of possible blocked hexes " << possibleBlockedHexes.size() << endl;
@@ -197,7 +208,7 @@ Point RandComp::getPointToBlock(int playerToRob) {
             // the value of blocking the hexagon by the player's score. If the player does 
             // own the settlement, decrease the value by 20 (to discourage a self-block)
             if (anySettlementIndex != -1) {
-                if (mySettlementIndex != -1) {
+                if (mySettlementIndex == -1) {
                     int blockedPlayer = settlements.at(anySettlementIndex).getPlayerNum() - 1;
                     hexValue += playerScores.at(blockedPlayer);
                 }
@@ -210,8 +221,8 @@ Point RandComp::getPointToBlock(int playerToRob) {
             // of blocking the hexagon by twice the player's score. If the player does 
             // own the city, decrease the value by 40 (to discourage a self-block)
             if (anyCityIndex != -1) {
-                if (myCityIndex != -1) {
-                    int blockedPlayer = cities.at(anySettlementIndex).getPlayerNum() - 1;
+                if (myCityIndex == -1) {
+                    int blockedPlayer = cities.at(anyCityIndex).getPlayerNum() - 1;
                     hexValue += playerScores.at(blockedPlayer) * 2;
                 }
                 else {
@@ -230,9 +241,9 @@ Point RandComp::getPointToBlock(int playerToRob) {
         }
     }
     // Choose one of the best possible locations to block randomly
-    randomIndex = rand() * int(maxIndices.size());
+    randomIndex = rand() % int(maxIndices.size());
 
-    return possibleBlockedHexes.at(randomIndex).getLocation();
+    return possibleBlockedHexes.at(maxIndices.at(randomIndex)).getLocation();
 }
 
 // Return a list of resources to trade to the bank in order to build a city
@@ -448,7 +459,8 @@ int RandComp::placeCity(vector<Point> cityPoints) {
         double maxValue = -10.0;
         double randomNumber;
         for (unsigned int i = 0; i < cityPoints.size(); i++) {
-            randomNumber = rand() / 0.5;
+            // Generate a random double between 0 and 2
+            randomNumber = ((double)rand()) * 2 / (double)RAND_MAX;
             cityValue = getHexValue(cityPoints.at(i)) + randomNumber;
             if (cityValue > maxValue) {
                 maxValue = cityValue;
@@ -504,7 +516,8 @@ int RandComp::placeSettlement(vector<Point> settlementPoints) {
         double maxValue = -10.0;
         double randomNumber;
         for (unsigned int i = 0; i < settlementPoints.size(); i++) {
-            randomNumber = rand() / 0.5;
+            // Generate a random double between 0 and 2
+            randomNumber = ((double)rand()) * 2 / (double)RAND_MAX;
             settlementValue = getHexValue(settlementPoints.at(i)) + randomNumber;
             if (settlementValue > maxValue) {
                 maxValue = settlementValue;
@@ -518,6 +531,11 @@ int RandComp::placeSettlement(vector<Point> settlementPoints) {
             resources[3]--;
             resources[4]--;
             currentBoard.addSettlement(settlementPoints.at(settlementIndex), playerNum);
+            string newPortType = currentBoard.getPortType(settlementPoints.at(settlementIndex));
+            if (newPortType != "") {
+                gainPortPower(newPortType);
+                cout << "Player " << playerNum << " just acquired a " << newPortType << " port!" << endl;
+            }
             updateResourcePoints(settlementPoints.at(settlementIndex));
             numSettlements++;
             score++;
@@ -558,7 +576,8 @@ int RandComp::placeRoad(vector<DoublePoint> roadPoints) {
         double maxValue = -10.0;
         double randomNumber;
         for (unsigned int i = 0; i < roadPoints.size(); i++) {
-            randomNumber = rand() / 0.5;
+            // Generate a random double between 0 and 2
+            randomNumber = ((double)rand()) * 2 / (double)RAND_MAX;
             roadValue = getRoadValue(roadPoints.at(i)) + randomNumber;
             if (roadValue > maxValue) {
                 maxValue = roadValue;

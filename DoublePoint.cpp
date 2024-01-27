@@ -16,6 +16,11 @@ bool DoublePoint::operator==(const DoublePoint& d) const
     if ((p1 == d.p1 && p2 == d.p2) || (p1 == d.p2 && p2 == d.p1)) return true;
     else return false;
 }
+bool DoublePoint::operator!=(const DoublePoint& d) const
+{
+    if ((p1 == d.p1 && p2 == d.p2) || (p1 == d.p2 && p2 == d.p1)) return false;
+    else return true;
+}
 /*size_t DoublePoint::operator()(const DoublePoint& d) const {
     size_t p1Hash = hash<Point>()(d.getP1());
     size_t p2Hash = hash<Point>()(d.getP2()) << 1;

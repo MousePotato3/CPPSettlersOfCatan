@@ -26,6 +26,6 @@ class MonteComp: public Player {
       int placeSettlement(vector<Point> settlementPoints);
       int placeRoad(vector<DoublePoint> roadPoints);
       Board takeTurn(Board b);
-	  int runSimulation(Board testBoard, int playerResources[], int playerNumPoints);
+	  int runSimulation (Board testBoard, int playerResources[], int playerNumPoints) const;
 };
 #endif

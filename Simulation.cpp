@@ -175,7 +175,7 @@ void Simulation::collectResources() {
         int resourceNum = players[playerToRob]->getRandomResource();
         if (resourceNum != -1) {
             players[playerToMove - 1]->gainResource(resourceNum);
-            players[playerToRob]->loseResource(resourceNum);
+            players[playerToRob - 1]->loseResource(resourceNum);
         }
     }
     else {

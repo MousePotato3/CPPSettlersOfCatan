@@ -22,6 +22,11 @@ bool Point::operator==(const Point& p) const
     if (x == p.x && y == p.y) return true;
     else return false;
 }
+bool Point::operator!=(const Point& p) const
+{
+    if (x == p.x && y == p.y) return false;
+    else return true;
+}
 size_t Point::operator()(const Point& p) const {
     size_t xHash = hash<int>()(p.getX());
     size_t yHash = hash<int>()(p.getY()) << 1;

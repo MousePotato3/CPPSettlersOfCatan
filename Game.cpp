@@ -103,7 +103,6 @@ void Game::initPlacement() {
 void Game::collectResources() {
     // Eventually players should have an option to play knight cards before rolling dice
     int diceroll = board.rollDice();
-    // cout << diceroll << " rolled on turn " << turn << endl;
 
     if (diceroll == 7) {
         // Players with more than a certain number of resources(usually half of their hand)
@@ -115,10 +114,10 @@ void Game::collectResources() {
         // The player whose turn it is moves the robber and steals from another player
         int playerToRob = players[playerToMove - 1]->getPlayerToRob();
         board.setRobberLocation(players[playerToMove - 1]->getPointToBlock(playerToRob));
-        int resourceNum = players[playerToRob]->getRandomResource();
+        int resourceNum = players[playerToRob - 1]->getRandomResource();
         if (resourceNum != -1) {
             players[playerToMove - 1]->gainResource(resourceNum);
-            players[playerToRob]->loseResource(resourceNum);
+            players[playerToRob - 1]->loseResource(resourceNum);
         }
     }
     else{
@@ -130,8 +129,9 @@ void Game::collectResources() {
         for (unsigned int i = 0; i < settlements.size(); i++) {
             neighbors = board.getAdjacentHexes(settlements.at(i).getLocation());
             for (unsigned int j = 0; j < neighbors.size(); j++) {
-                if (neighbors.at(j).getNumber() == diceroll)
+                if (neighbors.at(j).getNumber() == diceroll && neighbors.at(j).getLocation() != board.getRobberLocation()) {
                     players[settlements.at(i).getPlayerNum() - 1]->addResource(neighbors.at(j).getType());
+                }
             }
         }
         for (unsigned int i = 0; i < cities.size(); i++) {

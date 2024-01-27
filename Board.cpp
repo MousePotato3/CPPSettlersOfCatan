@@ -55,7 +55,7 @@ Board::Board()
 	numResources = {};
 	playerScores = {};
 	numPlayers = 0; // Initialized in setNumPlayers
-	turnNumber = 0;
+	turnNumber = 1;
 	winner = -1;
 	isVisible = true;
 }
@@ -68,20 +68,20 @@ Point Board::getRobberLocation() const { return robberLocation; }
 int Board::getTurnNumber() const { return turnNumber; }
 int Board::getWinner() const { return winner; }
 int Board::getNumResources(int n) const { 
-	if (0 < n and n <= numPlayers)
-		return numResources.at(n - 1);
-	else {
+	if (n < 1 || n > numPlayers) {
 		cerr << "Attempted to get the number of resources for invalid player " << n << endl;
 		return -1;
 	}
+	else
+		return numResources.at(n - 1);
 }
 int Board::getPlayerScore(int n) const { 
-	if (0 < n and n <= numPlayers)
-		return playerScores.at(n - 1);
-	else {
+	if (n < 1 || n > numPlayers) {
 		cerr << "Attempted to get the score for invalid player " << n << endl;
 		return -1;
 	}
+	else
+		return playerScores.at(n - 1);
 }
 Hexagon Board::getHexagon(int i) const { return tiles.at(i); }
 Port Board::getPort(int i) const { return ports.at(i); }
@@ -105,31 +105,40 @@ void Board::setWinner(const int w) {
 	winner = w;
 }
 void Board::setNumResources(const int n, const int r) {
-	if (0 < n and n <= numPlayers)
-		numResources.at(n - 1) = r;
-	else
+	if (n < 1 || n > numPlayers)
 		cerr << "Attempted to set the number of resources for invalid player " << n << endl;
+	else
+		numResources.at(n - 1) = r;
 }
 void Board::setPlayerScore(const int n, const int s) {
-	if (0 < n and n <= numPlayers)
-		playerScores.at(n - 1) = s;
-	else
+	if (n < 1 || n > numPlayers)
 		cerr << "Attempted to set the score for invalid player " << n << endl;
+	else
+		playerScores.at(n - 1) = s;
 }
 void Board::resetDice() { d.resetDice(); }
 int Board::rollDice() { return d.rollDice(); }
-void Board::gainResource(int i) { numResources[i]++; }
-void Board::loseResource(int i) {
-	if (numResources.at(i) > 0)
-		numResources.at(i)--;
+void Board::gainResource(int n) { 
+	if (n < 1 || n > numPlayers)
+		cerr << "Attempted to increase the resource count for invalid player " << n << endl;
 	else
-		cerr << "Player " << i + 1 << " tried to give up a resource but had none left" << endl;
+		numResources.at(n - 1)++;
+}
+void Board::loseResource(int n) {
+	if (n < 1 || n > numPlayers)
+		cerr << "Attempted to decrease the resource count for invalid player " << n << endl;
+	else if (numResources.at(n - 1) < 1)
+		cerr << "Player " << n + 1 << " tried to give up a resource but had none left" << endl;
+	else
+		numResources.at(n - 1)--;
 }
 
 // Make sure that the player number is valid and the settlement can legally be placed at the location.
 // Player class needs to check that the player has a settlement left to place before calling this method.
 void Board::addSettlement(Point p, int n, bool initialPlacement) {
-	if (n > numPlayers || n < 1)
+//	cout << "Adding a settlement to the board" << endl;
+
+	if (n < 1 || n > numPlayers)
 		cerr << "ERROR: Attempted to place a settlement for invalid player number " << n << endl;
 	else if (not (legalPlacement(p)))
 		cerr << "ERROR: Player " << n << "tried to place a settlement at location (" << p.getX()
@@ -144,15 +153,14 @@ void Board::addSettlement(Point p, int n, bool initialPlacement) {
 				<< " by placing a settlement at (" << p.getX() << ", " << p.getY() << ")" << endl;
 		}
 		settlements.push_back(Settlement(p, n));
-		playerScores[n]++;
+		playerScores.at(n - 1)++;
 	}
-	cout << "Done placing a settlement" << endl;
 }
 
 // Make sure that the player number is valid and the player has a settlement at the specified location.
 // Player class needs to check that the player has a city left to place before calling this method.
 void Board::addCity(Point p, int n, bool initialPlacement) {
-	if (n > numPlayers || n < 1)
+	if (n < 1 || n > numPlayers)
 		cerr << "ERROR: Attempted to place a city for invalid player number " << n << endl;
 	int settlementIndex = findSettlementIndex(p, n);
 		
@@ -170,7 +178,7 @@ void Board::addCity(Point p, int n, bool initialPlacement) {
 
 		settlements.erase(settlements.begin() + settlementIndex);
 		cities.push_back(City(p, n));
-		playerScores[n]++;
+		playerScores.at(n - 1)++;
 	}
 }
 
@@ -178,10 +186,10 @@ void Board::addCity(Point p, int n, bool initialPlacement) {
 // and the player already has a road connected to the location (or a settlement for initial placements).
 // Player class needs to check that the player has a road left to place before calling this method.
 void Board::addRoad(Point p1, Point p2, int n, bool initialPlacement) {
-	if (n > numPlayers || n < 1)
+//	cout << "Started placing a road" << endl;
+	if (n < 1 || n > numPlayers)
 		cerr << "ERROR: Attempted to place a road for invalid player number " << n << endl;
 	int roadIndex = findRoadIndex(p1, p2);
-	cout << "Started placing a road" << endl;
 	if (roadIndex != -1) {
 		if (p1.getX() < p2.getX() or (p1.getX() == p2.getX() and p1.getY() <= p2.getY()))
 			cerr << "ERROR: Player " << n << " tried to place a road between (" << p1.getX()

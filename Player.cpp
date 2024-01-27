@@ -146,7 +146,7 @@ void Player::portResource(int o, int n) {
 		resources[o] -= tradeRates[o];
 
 		if (isVisible)
-			cout << "Player" << playerNum << " just traded " << tradeRates[o] << " "
+			cout << "Player " << playerNum << " just traded " << tradeRates[o] << " "
 				<< getResourceType(o) << " for 1 " << getResourceType(n) << " using a port" << endl;
 	}
 }
@@ -178,6 +178,7 @@ int Player::getTotalResources(){
 
 // Update the player's resource access based on a new settlement or city
 void Player::updateResourcePoints(Point p) {
+//	cout << "Updating resource points for player " << playerNum << endl;
 	vector<Hexagon> adjacentHexes = currentBoard.getAdjacentHexes(p);
 	for (int i = 0; i < adjacentHexes.size(); i++) {
 		int resourceIndex = getResourceIndex(adjacentHexes[i].getType());

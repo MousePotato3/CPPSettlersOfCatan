@@ -11,9 +11,9 @@ int main( int argc, char* args[] )
 {
     // Create a new instance of the Game class and call its main method
     Game game;
-	cout << "About to play the game Setters of Catan" << endl;
+	cout << "About to play Setters of Catan" << endl;
     game.play();
-    cout << "Done playing the game Setters of Catan" << endl;
+    cout << "Done playing Setters of Catan" << endl;
     cin.ignore(256, '\n');
     cout << "Press ENTER to continue..." << endl;
     cin.get();

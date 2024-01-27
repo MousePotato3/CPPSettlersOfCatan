@@ -77,7 +77,8 @@ Point MonteComp::chooseInitialSettlementLocation(Board b) {
 	hexIntersections = currentBoard.getHexIntersections();
 	for (unsigned int i = 0; i < hexIntersections.size(); i++) {
 		if (currentBoard.legalPlacement(hexIntersections.at(i))) {
-			randomNumber = rand() / 0.5;
+			// Generate a random double between 0 and 2
+			randomNumber = ((double)rand()) * 2 / (double)RAND_MAX;
 			hexValue = getHexValue(hexIntersections.at(i)) + randomNumber;
 			if (hexValue > maxValue) {
 				maxValue = hexValue;
@@ -100,23 +101,31 @@ Point MonteComp::chooseInitialRoadLocation(Point p) {
 	return possibleRoadPoints.at(roadNum);
 }
 
-// Discard resources from the player at random
+// Discard resources from the player, prioritizing both the resources that the player has 
+// a lot of right now and resources that the player is likely to collect more of later
 void MonteComp::discard() {
-	int numberToDiscard = getTotalResources() / 2;
+	int numDiscardResources = getTotalResources() / 2;
+	int maxResourceType, maxResourceAccess, resourceAccess;
+
 	if (isVisible)
-		cout << "Player " << playerNum << " discarded " << numberToDiscard
+		cout << "Player " << playerNum << " discarded " << numDiscardResources
 		<< " resources on turn " << currentBoard.getTurnNumber() << endl;
-	for (int i = 0; i < numberToDiscard; i++) {
-		int maxIndex = 0;
-		int maxResources = resources[0];
+	for (int i = 0; i < numDiscardResources; i++) {
+		maxResourceType = 0;
+		maxResourceAccess = resources[0] * resources[0] + resourcePoints[0];
+
 		for (int j = 1; j < length(resources); j++) {
-			if (resources[j] >= maxResources) {
-				maxIndex = j;
-				maxResources = resources[j];
+			resourceAccess = resources[j] * resources[j] + resourcePoints[j];
+			if (resources[j] > 0 && resourceAccess >= maxResourceAccess) {
+				maxResourceType = j;
+				maxResourceAccess = resourceAccess;
 			}
 		}
-		resources[maxIndex]--;
+		resources[maxResourceType]--;
 	}
+
+	// Set the board's number of resources for the player based on the player's actual resources
+	currentBoard.setNumResources(playerNum, getTotalResources());
 }
 
 // Generate a random number between 0 and 2 and add it to each player's score, 
@@ -124,6 +133,7 @@ void MonteComp::discard() {
 // Only choose a player that has a resource to steal, if possible.
 int MonteComp::getPlayerToRob() {
 	double maxPoints = 0.0;
+	double randomNumber;
 	int playerToRob = -1;
 	int cannotRob = 1;
 
@@ -137,7 +147,8 @@ int MonteComp::getPlayerToRob() {
 	// Select a player to rob randomly who is leading or close to the lead
 	vector<int> playerScores = currentBoard.getPlayerScores();
 	for (unsigned int i = 0; i < playerScores.size(); i++) {
-		double randomNumber = rand() / 0.5;
+		// Generate a random double between 0 and 2
+		randomNumber = ((double)rand()) * 2 / (double)RAND_MAX;
 		if (((cannotRob == 0 && numResources.at(i) > 0) || cannotRob == 1)
 			&& i != playerNum - 1 && playerScores.at(i) + randomNumber > maxPoints) {
 			maxPoints = playerScores.at(i) + randomNumber;
@@ -198,7 +209,7 @@ Point MonteComp::getPointToBlock(int playerToRob) {
 			// the value of blocking the hexagon by the player's score. If the player does 
 			// own the settlement, decrease the value by 20 (to discourage a self - block)
 			if (anySettlementIndex != -1) {
-				if (mySettlementIndex != -1) {
+				if (mySettlementIndex == -1) {
 					int blockedPlayer = settlements.at(anySettlementIndex).getPlayerNum() - 1;
 					hexValue += playerScores.at(blockedPlayer);
 				}
@@ -210,8 +221,8 @@ Point MonteComp::getPointToBlock(int playerToRob) {
 			// of blocking the hexagon by twice the player's score. If the player does 
 			// own the city, decrease the value by 40 (to discourage a self - block)
 			if (anyCityIndex != -1) {
-				if (myCityIndex != -1) {
-					int blockedPlayer = cities.at(anySettlementIndex).getPlayerNum() - 1;
+				if (myCityIndex == -1) {
+					int blockedPlayer = cities.at(anyCityIndex).getPlayerNum() - 1;
 					hexValue += playerScores.at(blockedPlayer) * 2;
 				}
 				else {
@@ -230,9 +241,9 @@ Point MonteComp::getPointToBlock(int playerToRob) {
 		}
 	}
 	// Choose one of the best possible locations to block randomly
-	randomIndex = rand() * int(maxIndices.size());
+	randomIndex = rand() % int(maxIndices.size());
 
-	return possibleBlockedHexes.at(randomIndex).getLocation();
+	return possibleBlockedHexes.at(maxIndices.at(randomIndex)).getLocation();
 }
 
 // Return a list of resources to trade to the bank in order to build a city
@@ -429,7 +440,7 @@ int MonteComp::placeCity(vector<Point> cityPoints) {
 
 	// Run simulations on the default option, which is not to place a city
 	int maxValue = runSimulation(currentBoard, resources, score);
-	int maxIndex = -1;
+	int cityIndex = -1;
 
 	// Create a copy of the player's current resources
 	for (int i = 0; i < length(resources); i++) {
@@ -461,12 +472,12 @@ int MonteComp::placeCity(vector<Point> cityPoints) {
 		int value = runSimulation(testBoard, tempResources, tempScore);
 		if (value >= maxValue) {
 			maxValue = value;
-			maxIndex = i;
+			cityIndex = i;
 		}
 	}
 
 	// Return -1 if the simulations showed that it is better not to build a city
-	if (maxIndex == -1)
+	if (cityIndex == -1)
 		return -1;
 
 	// Trade resources with the bank until a city can be built
@@ -487,11 +498,11 @@ int MonteComp::placeCity(vector<Point> cityPoints) {
 	if (resources[0] >= 3 && resources[1] >= 2) {
 		resources[0] -= 3;
 		resources[1] -= 2;
-		currentBoard.addCity(cityPoints.at(maxIndex), playerNum);
-		updateResourcePoints(cityPoints.at(maxIndex));
+		currentBoard.addCity(cityPoints.at(cityIndex), playerNum);
+		updateResourcePoints(cityPoints.at(cityIndex));
 		numCities++;
 		score++;
-		return maxIndex;
+		return cityIndex;
 	}
 
 	return -1;
@@ -508,7 +519,7 @@ int MonteComp::placeSettlement(vector<Point> settlementPoints) {
 
 	// Run simulations on the default option, which is not to place a settlement
 	int maxValue = runSimulation(currentBoard, resources, score);
-	int maxIndex = -1;
+	int settlementIndex = -1;
 
 	// Create a copy of the player's current resources
 	for (int i = 0; i < length(resources); i++) {
@@ -546,12 +557,12 @@ int MonteComp::placeSettlement(vector<Point> settlementPoints) {
 		int value = runSimulation(testBoard, tempResources, tempScore);
 		if (value >= maxValue) {
 			maxValue = value;
-			maxIndex = i;
+			settlementIndex = i;
 		}
 	}
 
 	// Return -1 if the simulations showed that it is better not to build a settlement
-	if (maxIndex == -1)
+	if (settlementIndex == -1)
 		return -1;
 
 	// Trade resources with the bank until a settlement can be built
@@ -578,11 +589,16 @@ int MonteComp::placeSettlement(vector<Point> settlementPoints) {
 		resources[2]--;
 		resources[3]--;
 		resources[4]--;
-		currentBoard.addSettlement(settlementPoints.at(maxIndex), playerNum);
-		updateResourcePoints(settlementPoints.at(maxIndex));
+		currentBoard.addSettlement(settlementPoints.at(settlementIndex), playerNum);
+		string newPortType = currentBoard.getPortType(settlementPoints.at(settlementIndex));
+		if (newPortType != "") {
+			gainPortPower(newPortType);
+			cout << "Player " << playerNum << " just acquired a " << newPortType << " port!" << endl;
+		}
+		updateResourcePoints(settlementPoints.at(settlementIndex));
 		numSettlements++;
 		score++;
-		return maxIndex;
+		return settlementIndex;
 	}
 
 	return -1;
@@ -599,7 +615,7 @@ int MonteComp::placeRoad(vector<DoublePoint> roadPoints) {
 
 	// Run simulations on the default option, which is not to place a road
 	int maxValue = runSimulation(currentBoard, resources, score);
-	int maxIndex = -1;
+	int roadIndex = -1;
 
 	// Create a copy of the player's current resources
 	for (int i = 0; i < length(resources); i++) {
@@ -631,12 +647,12 @@ int MonteComp::placeRoad(vector<DoublePoint> roadPoints) {
 		int value = runSimulation(testBoard, tempResources, tempScore);
 		if (value >= maxValue) {
 			maxValue = value;
-			maxIndex = i;
+			roadIndex = i;
 		}
 	}
 
 	// Return -1 if the simulations showed that it is better not to build a road
-	if (maxIndex == -1)
+	if (roadIndex == -1)
 		return -1;
 
 	// Trade resources with the bank until a road can be built
@@ -657,9 +673,9 @@ int MonteComp::placeRoad(vector<DoublePoint> roadPoints) {
 	if (resources[3] > 0 && resources[4] > 0) {
 		resources[3]--;
 		resources[4]--;
-		currentBoard.addRoad(roadPoints.at(maxIndex).getP1(), roadPoints.at(maxIndex).getP2(), playerNum);
+		currentBoard.addRoad(roadPoints.at(roadIndex).getP1(), roadPoints.at(roadIndex).getP2(), playerNum);
 		numRoads++;
-		return maxIndex;
+		return roadIndex;
 	}
 
 	return -1;
@@ -728,13 +744,9 @@ Board MonteComp::takeTurn(Board b) {
 	return currentBoard;
 }
 
-int MonteComp::runSimulation(Board testBoard, int playerResources[], int playerNumPoints) {
-	int playerToMove;
-	if (playerNum == 4)
-		playerToMove = 1;
-	else
-		playerToMove = playerNum + 1;
-	Simulation s = Simulation(testBoard, playerResources, playerNumPoints, playerToMove);
+// Run Monte Carlo Simulations for the MonteComp player, and return the number of games won 
+int MonteComp::runSimulation(Board testBoard, int playerResources[], int playerNumPoints) const {
+	Simulation s = Simulation(testBoard, playerResources, playerNumPoints, playerNum);
 	int value = s.runPlayouts(playerNum);
 	return value;
 }

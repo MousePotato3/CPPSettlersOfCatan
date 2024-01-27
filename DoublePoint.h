@@ -12,6 +12,7 @@ class DoublePoint{
       Point getP1() const;
       Point getP2() const;
       bool operator==(const DoublePoint& d) const;
-//      size_t operator()(const DoublePoint& d) const;
+      bool operator!=(const DoublePoint& d) const;
+//    size_t operator()(const DoublePoint& d) const;
 };
 #endif
